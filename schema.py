@@ -35,10 +35,11 @@ class GroupAttribute(Base):
         self.group = group
 
 
-def init_db_session(db_name):
+def init_db_session(db_name=None, engine=None):
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
-    engine = create_engine('sqlite:///' + db_name)
+    if not engine:
+        engine = create_engine('sqlite:///' + db_name)
 
     Session = sessionmaker()
     Session.configure(bind=engine)

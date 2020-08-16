@@ -14,7 +14,8 @@ if __name__ == '__main__':
                         help='sqlite db name')
     args = parser.parse_args()
 
-    schedule.every(10).seconds.do(vk_scraping.scrape, args.vk_service_token, args.input_file, args.db_name)
+    schedule.every(1).day.do(vk_scraping.scrape, args.vk_service_token, args.input_file, args.db_name)
+    schedule.run_all()
 
     while True:
         pending = schedule.run_pending()
