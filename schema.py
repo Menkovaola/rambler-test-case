@@ -1,8 +1,6 @@
-import os
-
 from sqlalchemy import Column, DateTime, String, Integer, ForeignKey, func, Index
-from sqlalchemy.orm import relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -13,6 +11,7 @@ class Group(Base):
     vk_id: Column = Column(Integer, nullable=False)
     name = Column(String, nullable=False)
     url = Column(String, nullable=False)
+    created_date = Column(DateTime, default=func.current_timestamp(), nullable=False)
 
     def __init__(self, vk_id, name, url):
         self.vk_id = vk_id
@@ -36,17 +35,12 @@ class GroupAttribute(Base):
         self.group = group
 
 
-db_name = 'vk_analytics.sqlite'
-if os.path.exists(db_name):
-    os.remove(db_name)
+def init_db_session(db_name):
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+    engine = create_engine('sqlite:///' + db_name)
 
-from sqlalchemy import create_engine
-
-engine = create_engine('sqlite:///' + db_name)
-
-from sqlalchemy.orm import sessionmaker
-
-Session = sessionmaker()
-Session.configure(bind=engine)
-Base.metadata.create_all(engine)
-db_session = Session()
+    Session = sessionmaker()
+    Session.configure(bind=engine)
+    Base.metadata.create_all(engine)
+    return Session()
